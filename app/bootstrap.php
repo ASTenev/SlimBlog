@@ -11,22 +11,11 @@ $app = new \Slim\App([
         'displayErrorDetails' => true
         ]
     ]);
-
+//Get the container
 $container = $app->getContainer();
 
-$container['view'] = function ($container) {
-    $view = new \Slim\Views\Twig(__DIR__ . '/views', [
-        'cache' => false
-    ]);
-
-    // Instantiate and add Slim specific extension
-    $view->addExtension(new \Slim\Views\TwigExtension(
-        $container->router, 
-        $container->request->getUri()));
-
-    return $view;
-};
-
+//Include container dependencies
+require __DIR__ .'/dependancies.php';
 
 //Load the routes
 require __DIR__ .'/config/routes.php';

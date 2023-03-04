@@ -1,5 +1,6 @@
 <?php
-if (file_exists(__DIR__ . '/../.env')) {
+$envFile = __DIR__ . '/../../.env';
+if (file_exists($envFile)) {
     $envVars = parse_ini_file($envFile);
     foreach ($envVars as $key => $value) {
         putenv("$key=$value");
@@ -9,6 +10,6 @@ if (file_exists(__DIR__ . '/../.env')) {
 return [
     'host' => getenv('DB_HOST'),
     'name' => getenv('DB_NAME'),
-    'username' => getenv('DB_USER'),
-    'password' => getenv('DB_PASS'),
+    'username' => getenv('DB_USERNAME'),
+    'password' => getenv('DB_PASSWORD'),
 ];
