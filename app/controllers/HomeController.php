@@ -20,7 +20,8 @@ class HomeController{
         $posts = $this->post->getAll();
         // Render view
         return $this->view->render($response, 'posts/index.twig', [
-            'posts' => $posts
+            'posts' => $posts,
+            'session' => $_SESSION
         ]);
     }
 }

@@ -21,18 +21,21 @@ class PostController
 
     public function index (Request $request, Response $response)
     {
+        die(print_r($_SESSION));
         // Get all posts
         $posts = $this->post->getAll();
 
         // Render view
         return $this->view->render($response, 'posts/index.twig', [
-            'posts' => $posts
+            'posts' => $posts,
+            'session' => $_SESSION ?? null
         ]);
     }
 
     public function show(Request $request, Response $response, $args)
     {
         //Check if id is set
+        die(print_r($_SESSION));
         if (!isset($args['slug']) || !$args['slug']) {
             throw new Exception('Invalid parameters');
         }
@@ -41,13 +44,15 @@ class PostController
         
         // Render view
         return $this->view->render($response, 'posts/show.twig', [
-            'post' => $post_data[0]
+            'post' => $post_data[0],
+            'session' => $_SESSION ?? null
         ]);
     }
 
     public function createForm(Request $request, Response $response)
     {
-        return $this->view->render($response, 'posts/create.twig');
+        return $this->view->render($response, 'posts/create.twig',
+            ['session' => $_SESSION ?? null]);
     }
 
     public function create(Request $request, Response $response)
@@ -90,7 +95,8 @@ class PostController
 
         return $this->view->render($response, 'posts/create.twig', [
             'post' => $post_data[0],
-            'errors' => $errors ?? []
+            'errors' => $errors ?? [],
+            'session' => $_SESSION ?? null
         ]);
     }
 

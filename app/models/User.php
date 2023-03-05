@@ -80,20 +80,28 @@ class User
         return $this->repository->getAll();
     }
 
-    public function getById($params)
+    public function getById($id)
     {
         // Get user by ID from database
-        if (!isset($params['id']) || !$params['id']) {
+        if (!isset($id) || !$id) {
             throw new Exception('Invalid parameters');
         }
 
-        $this->repository->getByField($params);
+        $this->repository->getByField('id',$id);
     }
 
+    public function getByEmail($email)
+    {
+        // Get user by email from database
+        if (!isset($email) || !$email) {
+            throw new Exception('Invalid parameters');
+        }
+        
+        return $this->repository->getByField('email',$email);
+    }
 
     public function create($params)
     {
-
         // Register user
         if (!isset($params['name']) || !isset($params['email']) || !isset($params['password'])) {
             throw new Exception('Invalid parameters');

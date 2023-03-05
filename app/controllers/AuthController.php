@@ -16,13 +16,18 @@ class AuthController {
     }
 
     public function loginForm(Request $request, Response $response) {
+        if(isset($_SESSION['user'])) {
+            return $response->withRedirect('/');
+        }
         // Render view
         if(isset($_SESSION['flash'])) {
             $flash_message = $_SESSION['flash'];
             unset($_SESSION['flash']);
         }
+
         return $this->view->render($response, 'auth/login.twig', [
-            'flash_message' => $flash_message ?? null
+            'flash_message' => $flash_message ?? null,
+            'session' => $_SESSION
         ]);
         
     }
@@ -33,18 +38,23 @@ class AuthController {
         $this->user->setEmail($params['email']);
         $this->user->setPassword($params['password']);
         // Get user from database
-        $user_data = $this->user->findByEmail();
-        
+        list($user_data) = $this->user->getByEmail($params['email']);
+
         // Verify password
-        if (!$user_data || !password_verify($params['password'], $user_data->getPassword())) {
-            return $response->withStatus(401)->write('Invalid email or password');
+        if (!$user_data || !password_verify($params['password'], $user_data['password'])) {
+            return $this->view->render($response, 'auth/login.twig', [
+            'flash_message' => 'Invalid email or password!',
+            'session' => $_SESSION
+        ]);            
         }
-
+        session_start();
         // Set user ID in session
-        $_SESSION['user_id'] = $user_data->getId();
-
-        // Return success response
-        return $response->withJson(['message' => 'Login successful']);
+        $_SESSION['user'] = [
+            'id' => $user_data['id'],
+            'name' => $user_data['name']
+        ];
+         // Return success response
+        return $response->withRedirect('/');
     }
 
     public function logout(Request $request, Response $response) {
@@ -53,6 +63,6 @@ class AuthController {
         session_destroy();
 
         // Return success response
-        return $response->withJson(['message' => 'Logout successful']);
+        return $response->withRedirect('/');
     }
 }

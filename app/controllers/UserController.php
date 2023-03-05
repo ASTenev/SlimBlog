@@ -21,12 +21,16 @@ class UserController
 
     public function registrationForm(Request $request, Response $response)
     {
+        if(isset($_SESSION['user'])) {
+            return $response->withRedirect('/');
+        }
         return $this->view->render($response, 'users/register.twig');
     }
 
     public function show(Request $request, Response $response, $args)
     {
         //Check if id is set
+        
         if (!isset($args['slug']) || !$args['slug']) {
             throw new Exception('Invalid parameters');
         }
@@ -35,7 +39,8 @@ class UserController
 
         // Render view
         return $this->view->render($response, 'users/show.twig', [
-            'user' => $user_data
+            'user' => $user_data,
+            'session' => $_SESSION ?? null
         ]);
     }
 
@@ -50,11 +55,10 @@ class UserController
         $params = [
             'name' => $params['name'],
             'email' => $params['email'],
-            'password' => $params['password']
+            'password' => password_hash($params['password'], PASSWORD_DEFAULT)
         ];
 
         // Try to Insert user into database
-        session_start();
         try {
             $this->user->create($params);
             $_SESSION['flash'] = 'User created successfully.';
@@ -78,7 +82,8 @@ class UserController
         }
         return $this->view->render($response, 'users/edit.twig', [
             'user' => $user_data[0],
-            'errors' => $errors
+            'errors' => $errors,
+            'session' => $_SESSION ?? null
         ]);
     }
 

@@ -50,11 +50,11 @@ class Mysql implements RepositoryInterface
     {
         // Generate SQL query
         $where = ' ';
-        if ($orm->join) {
+        if (property_exists($orm, 'join')) {
             $where .= "JOIN {$orm->join} ON {$orm->join}.{$orm->join_field2} = {$orm->table}.{$orm->join_field1} ";
         }
 
-        if ($orm->field && $orm->value) {
+        if (property_exists($orm, 'field') &&property_exists($orm, 'value')) {
             $where .= "WHERE {$orm->table}.{$orm->field} = '{$orm->value}'";
             $teaser = '';
         } else {
@@ -64,7 +64,7 @@ class Mysql implements RepositoryInterface
         $table = $orm->table;
 
         $sql = "SELECT * $teaser FROM $table $where";
-
+        
         // Prepare and execute statement
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
