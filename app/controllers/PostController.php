@@ -45,6 +45,11 @@ class PostController
         ]);
     }
 
+    public function createForm(Request $request, Response $response)
+    {
+        return $this->view->render($response, 'posts/create.twig');
+    }
+
     public function create(Request $request, Response $response)
     {
         // Get request parameters
@@ -76,14 +81,16 @@ class PostController
         if (!isset($args['id']) || !$args['id']) {
             throw new Exception('Invalid parameters');
         }
-        $post_data = $request->getParsedBody();
+        $post_data = $this->post->getById($args['id']);
+
         // Render view
-        if (!count($post_data)) {
+        if (!$post_data[0]) {
             $errors = ['Invalid post id'];
         }
-        return $this->view->render($response, 'posts/edit.twig', [
-            'post' => $post_data,
-            'errors' => $errors
+
+        return $this->view->render($response, 'posts/create.twig', [
+            'post' => $post_data[0],
+            'errors' => $errors ?? []
         ]);
     }
 
@@ -95,12 +102,13 @@ class PostController
         }
         // Get request parameters
         $params = $request->getParsedBody();
-
+        unset($params['_METHOD']);
+        $params['id'] = $args['id'];
         // Update post in database
-        $this->post->update($args['id'], $params);
+        $this->post->update($params);
 
-        // Redirect to posts index
-        return $response->withRedirect('/posts');
+        //Show the updated post
+        return $response->withRedirect('/posts/' . $args['id']);
     }
 
     public function delete(Request $request, Response $response, $args)

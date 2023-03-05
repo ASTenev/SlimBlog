@@ -14,9 +14,17 @@ class UserRepository
         $this->repository = $repository;
     }
 
+    public function getTable()
+    {
+        return $this->table;
+    }
+
     public function getAll()
     {
-        return $this->repository->read($this->table);
+        $orm = new \stdClass();
+        $orm->table = $this->table;
+
+        return $this->repository->read($orm);
     }
 
     public function getByField($field, $value)
@@ -24,7 +32,12 @@ class UserRepository
         if (!isset($field) || !isset($value)) {
             return false; // Prevent reading all records without condition
         }
-        return $this->repository->read($this->table, $field, $value);
+        $orm = new \stdClass();
+        $orm->table = $this->table;
+        $orm->field = $field;
+        $orm->value = $value;
+
+        return $this->repository->read($orm);
     }
 
     public function create($params)
@@ -33,7 +46,11 @@ class UserRepository
             return false; // Prevent creating empty record
         }
          
-        return $this->repository->create($this->table, $params);
+        $orm = new \stdClass();
+        $orm->table = $this->table;
+        $orm->params = $params;
+
+        return $this->repository->create($orm);
     }
 
     public function update($params)
@@ -45,7 +62,13 @@ class UserRepository
             unset($params['id']);
         }
 
-        return $this->repository->update($this->table, $id, $params);
+        $orm = new \stdClass();
+        $orm->table = $this->table;
+        $orm->field = 'id';
+        $orm->value = $id;
+        $orm->params = $params;
+
+        return $this->repository->update($orm);
     }
 
     public function delete($params)
@@ -56,6 +79,11 @@ class UserRepository
             $id = $params['id'];
             unset($params['id']);
         }
-        return $this->repository->delete($this->table, $id);
+
+        $orm = new \stdClass();
+        $orm->table = $this->table;
+        $orm->value = $id;
+
+        return $this->repository->delete($orm);
     }
 }

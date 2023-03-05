@@ -39,6 +39,7 @@ class UserController
         ]);
     }
 
+    
     public function create(Request $request, Response $response)
     {
         // Get request parameters
@@ -72,11 +73,11 @@ class UserController
         }
         $user_data = $request->getParsedBody();
         // Render view
-        if (!count($user_data)) {
+        if (!$user_data[0]) {
             $errors = ['Invalid user id'];
         }
         return $this->view->render($response, 'users/edit.twig', [
-            'user' => $user_data,
+            'user' => $user_data[0],
             'errors' => $errors
         ]);
     }

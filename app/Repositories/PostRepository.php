@@ -3,29 +3,61 @@
 namespace App\Repositories;
 
 use App\Interfaces\RepositoryInterface;
+use App\Repositories\UserRepository;
 
 class PostRepository
 {
     private $repository;
+    private $userRepostiory;
     private $table = 'posts';
 
-    public function __construct(RepositoryInterface $repository)
+    public function __construct(RepositoryInterface $repository, UserRepository $userRepostiory)
     {
         $this->repository = $repository;
+        $this->userRepostiory = $userRepostiory;
+    }
+
+    public function getTable()
+    {
+        return $this->table;
     }
 
     public function getAll()
     {
-        return $this->repository->read($this->table);
-    }
+        $orm = new \stdClass();
+        $orm->table = $this->table;
+        $orm->join = $this->userRepostiory->getTable();
+        $orm->join_field1 = 'user_id';
+        $orm->join_field2 = 'id';
+        $result = $this->repository->read($orm);
+        foreach($result as $key => $value) {
+            //remove password and email from result
+            unset($result[$key]['password']);
+            unset($result[$key]['email']);
+        }
+        return $result;
+        }
 
     public function getByField($field, $value)
     {
         if (!isset($field) || !isset($value)) {
             return false; // Prevent reading all records without condition
         }
-        
-        return $this->repository->read($this->table, $field, $value);
+
+        $orm = new \stdClass();
+        $orm->table = $this->table;
+        $orm->join = $this->userRepostiory->getTable();
+        $orm->join_field1 = 'user_id';
+        $orm->join_field2 = 'id';
+        $orm->field = $field;
+        $orm->value = $value;
+        $result = $this->repository->read($orm);
+        foreach($result as $key => $value) {
+            //remove password and email from result
+            unset($result[$key]['password']);
+            unset($result[$key]['email']);
+        }
+        return $result;
     }
 
     public function create($params)
@@ -33,8 +65,11 @@ class PostRepository
         if (!count($params)) {
             return false; // Prevent creating empty record
         }
-         
-        return $this->repository->create($this->table, $params);
+        $orm = new \stdClass();
+        $orm->table = $this->table;
+        $orm->params = $params;
+
+        return $this->repository->create($orm);
     }
 
     public function update($params)
@@ -46,7 +81,12 @@ class PostRepository
             unset($params['id']);
         }
 
-        return $this->repository->update($this->table, $id, $params);
+        $orm = new \stdClass();
+        $orm->table = $this->table;
+        $orm->id = $id;
+        $orm->params = $params;
+
+        return $this->repository->update($orm);
     }
 
     public function delete($params)
@@ -57,6 +97,11 @@ class PostRepository
             $id = $params['id'];
             unset($params['id']);
         }
-        return $this->repository->delete($this->table, $id);
+
+        $orm = new \stdClass();
+        $orm->table = $this->table;
+        $orm->id = $id;
+
+        return $this->repository->delete($orm);
     }
 }

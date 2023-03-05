@@ -1,26 +1,34 @@
 <?php
 namespace App\Database;
+
 use App\Interfaces\RepositoryInterface;
 use PDO;
 
-class Mysql implements RepositoryInterface{
+class Mysql implements RepositoryInterface
+{
     private $conn;
 
-    function __construct() {
+    function __construct()
+    {
         // Create connection
-        $db_config=include_once __DIR__ . "/../config/database.php";
+        $db_config = include_once __DIR__ . "/../config/database.php";
         $dsn = "mysql:host={$db_config['host']};dbname={$db_config['name']};charset=utf8mb4";
         $options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION);
         $this->conn = new PDO($dsn, $db_config['username'], $db_config['password'], $options);
     }
 
-    function __destruct() {
+    function __destruct()
+    {
         // Close connection
         $this->conn = null;
     }
 
-    function create(string $table, array $data) {
+    function create($orm)
+    {
         // Generate SQL query
+        $table = $orm->table;
+        $data = $orm->params;
+
         $keys = implode(", ", array_keys($data));
         $values = ":" . implode(", :", array_keys($data));
         $sql = "INSERT INTO $table ($keys) VALUES ($values)";
@@ -30,7 +38,7 @@ class Mysql implements RepositoryInterface{
             $stmt->bindParam(":$key", $value);
         }
         $stmt->execute();
-        if($stmt->rowCount() > 0){
+        if ($stmt->rowCount() > 0) {
             //return last inserted id
             return $this->conn->lastInsertId();
         } else {
@@ -38,18 +46,23 @@ class Mysql implements RepositoryInterface{
         }
     }
 
-    function read(string $table, string $condition_field = '', string $condition_value = '') {
+    function read($orm)
+    {
         // Generate SQL query
-        if($condition_field&&$condition_value)
-        {
-            $where = "WHERE `$condition_field` = '$condition_value'";
-            $teaser = '';
+        $where = ' ';
+        if ($orm->join) {
+            $where .= "JOIN {$orm->join} ON {$orm->join}.{$orm->join_field2} = {$orm->table}.{$orm->join_field1} ";
         }
-        else
-        {
-            $where = '';
+
+        if ($orm->field && $orm->value) {
+            $where .= "WHERE {$orm->table}.{$orm->field} = '{$orm->value}'";
+            $teaser = '';
+        } else {
             $teaser = ', LEFT(content, 120) AS content';
         }
+
+        $table = $orm->table;
+
         $sql = "SELECT * $teaser FROM $table $where";
 
         // Prepare and execute statement
@@ -60,15 +73,19 @@ class Mysql implements RepositoryInterface{
         return $result !== false ? $result : false;
     }
 
-    function update(string $table, int $id, array $data) {
+    function update($orm)
+    {
+        $table = $orm->table;
+        $data = $orm->params;
+        $id = $orm->id;
 
-        if(!$id) return false; // Prevent updating all records (without condition)
+        if (!$id) return false; // Prevent updating all records (without condition)
         // Generate SQL query
         $set = array();
         foreach ($data as $key => $value) {
             $set[] = "$key = :$key";
         }
-        $sql = "UPDATE $table SET " . implode(", ", $set) . "WHERE id = $id";
+        $sql = "UPDATE $table SET " . implode(", ", $set) . " WHERE id = $id";
 
         // Prepare and execute statement
         $stmt = $this->conn->prepare($sql);
@@ -79,9 +96,13 @@ class Mysql implements RepositoryInterface{
         return $stmt->rowCount() > 0;
     }
 
-    function delete(string $table, int $id) {
+    function delete($orm)
+    {
         // Generate SQL query
-        if(!$id) return false; // Prevent deleting all records (without condition
+        $table = $orm->table;
+        $id = $orm->id;
+
+        if (!$id) return false; // Prevent deleting all records (without condition
         $sql = "DELETE FROM $table WHERE id = $id";
 
         // Prepare and execute statement
