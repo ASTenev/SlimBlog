@@ -3,16 +3,15 @@ namespace App\Controllers;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
-use App\Services\UserService;
 use App\Models\User;
 use Slim\Views\Twig;
 
 class AuthController {
-    private $userService;
+    private $user;
     private $view;
 
-    public function __construct(UserService $userService, Twig $view) {
-        $this->userService = $userService;
+    public function __construct(User $user, Twig $view) {
+        $this->user = $user;
         $this->view = $view;
     }
 
@@ -21,42 +20,21 @@ class AuthController {
         return $this->view->render($response, 'auth/login.twig');
     }
 
-    public function registrationForm(Request $request, Response $response) {
-        // Render view
-        return $this->view->render($response, 'auth/register.twig');
-    }
-
-    public function register (Request $request, Response $response) {
-        // Get request parameters
-        $params = $request->getParsedBody();
-
-        // Create new user object
-        $user = new User();
-        $user->setName($params['name']);
-        $user->setEmail($params['email']);
-        $user->setPassword(password_hash($params['password'], PASSWORD_DEFAULT));
-
-        // Insert user into database
-        $user = $this->userService->create($user);
-
-        // Return success response
-        return $response->withJson(['message' => 'Registration successful']);
-    }
-
     public function login(Request $request, Response $response) {
         // Get request parameters
         $params = $request->getParsedBody();
-
+        $this->user->setEmail($params['email']);
+        $this->user->setPassword($params['password']);
         // Get user from database
-        $user = $this->userService->getByEmail($params['email']);
-
+        $user_data = $this->user->findByEmail();
+        
         // Verify password
-        if (!$user || !password_verify($params['password'], $user->getPassword())) {
+        if (!$user_data || !password_verify($params['password'], $user_data->getPassword())) {
             return $response->withStatus(401)->write('Invalid email or password');
         }
 
         // Set user ID in session
-        $_SESSION['user_id'] = $user->getId();
+        $_SESSION['user_id'] = $user_data->getId();
 
         // Return success response
         return $response->withJson(['message' => 'Login successful']);

@@ -1,5 +1,5 @@
 <?php
-$container['view'] = function ($container) {
+$container['View'] = function ($container) {
     $view = new \Slim\Views\Twig(__DIR__ . '/views', [
         'cache' => false
     ]);
@@ -15,60 +15,57 @@ $container['view'] = function ($container) {
 
 $container['HomeController'] = function ($container) {
     return new App\Controllers\HomeController(
-        $container->get('PostService'),
-        $container->get('view')
+        $container->get('Post'),
+        $container->get('View')
     );
 };
 
 $container['UserController'] = function ($container) {
     return new App\Controllers\UserController(
-        $container->get('UserService'),
-        $container->get('view')
+        $container->get('User'),
+        $container->get('View')
     );
 };
 
 $container['AuthController'] = function ($container) {
     return new App\Controllers\AuthController(
-        $container->get('UserService'),
-        $container->get('view')
+        $container->get('User'),
+        $container->get('View')
     );
 };
 
 $container['PostController'] = function ($container) {
     return new App\Controllers\PostController(
-        $container->get('PostService'),
-        $container->get('view')
+        $container->get('Post'),
+        $container->get('View')
     );
 };
 
-$container['UserService'] = function ($container) {
-    return new App\Services\UserService(
-        $container->get('DatabaseService'),
-        $container->get('UserModel')
+$container['User'] = function ($container) {
+    return new App\Models\User(
+        $container->get('UserRepository')
     );
 };
 
-$container['PostService'] = function ($container) {
-    return new App\Services\PostService(
-        $container->get('DatabaseService'),
-        $container->get('PostModel')
-    );
-};
-
-$container['UserModel'] = function ($container) {
-    return new App\Models\User();
-};
-
-$container['PostModel'] = function ($container) {
-    return new App\Models\Post();
-};
-
-$container['DatabaseService'] = function ($container) {
-    return new App\Services\DatabaseService(
-        $container->get('Mysql')
+$container['Post'] = function ($container) {
+    return new App\Models\Post(
+        $container->get('PostRepository')
     );
 };
 
 $container['Mysql'] = function ($container) {
     return new App\Database\Mysql();
+};
+
+$container['UserRepository'] = function ($container) {
+    return new App\Repositories\UserRepository(
+        $container->get('Mysql')
+    );
+};
+
+$container['PostRepository'] = function ($container) {
+    return new App\Repositories\PostRepository
+    (
+        $container->get('Mysql')
+    );
 };

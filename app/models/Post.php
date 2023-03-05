@@ -13,6 +13,12 @@ class Post
     private $created_at;
     private $updated_at;
 
+    private $repository;
+
+    public function __construct( $repository) {
+        $this->repository = $repository;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -81,5 +87,34 @@ class Post
     public function setUpdatedAt($updated_at)
     {
         $this->updated_at = $updated_at;
+    }
+    
+     public function findAll() {
+        // Get all users from database
+        return $this->repository->getAll();
+    }
+
+    public function findById($id) {
+        // Get user by ID from database
+        $this->repository->setCondition('id',$id);
+
+        return $this->repository->getByField();
+    }
+
+    public function delete() {
+        // Delete user from database
+    }
+
+    public function save() {
+        // Save user to database
+    }
+
+    public function update() {
+        // Update user in database
+    }
+
+    public function create() {
+        
+
     }
 }

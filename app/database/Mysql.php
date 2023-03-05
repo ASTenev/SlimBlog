@@ -1,10 +1,10 @@
 <?php
 namespace App\Database;
-use App\Interfaces\DatabaseInterface;
+use App\Interfaces\RepositoryInterface;
 
 use PDO;
 
-class Mysql implements DatabaseInterface{
+class Mysql implements RepositoryInterface{
     private $conn;
 
     function __construct() {
@@ -35,12 +35,11 @@ class Mysql implements DatabaseInterface{
         return $stmt->rowCount() > 0;
     }
 
-    function read(string $table, array $condition = []) {
+    function read(string $table, string $condition_field = '', string $condition_value = '') {
         // Generate SQL query
-        if($condition)
+        if($condition_field&&$condition_value)
         {
-            list($field, $value) = $condition;
-            $where = "WHERE $field = $value";
+            $where = "WHERE `$condition_value` = `$condition_value`";
         }
         else
         {
@@ -57,8 +56,9 @@ class Mysql implements DatabaseInterface{
     }
 
     function update(string $table, int $id, array $data) {
+
+        if(!$id) return false; // Prevent updating all records (without condition)
         // Generate SQL query
-         if(!$id) return false; // Prevent updating all records (without condition)
         $set = array();
         foreach ($data as $key => $value) {
             $set[] = "$key = :$key";

@@ -3,24 +3,23 @@ namespace App\Controllers;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use App\Services\PostService;
+use App\Models\Post;
 use Slim\Views\Twig;
 
 class HomeController{
-    private $postService;
+    private $post;
     private $view;
 
-    public function __construct(PostService $postService, Twig $view) {
-        $this->postService = $postService;
+    public function __construct(Post $post, Twig $view) {
+        $this->post = $post;
         $this->view = $view;
     }
 
     public function index(Request $request, Response $response) {
         // Get all posts
-        $posts = $this->postService->getAll();
-
+        $posts = $this->post->findAll();
         // Render view
-        return $this->view->render($response, '/home.twig', [
+        return $this->view->render($response, 'posts/index.twig', [
             'posts' => $posts
         ]);
     }

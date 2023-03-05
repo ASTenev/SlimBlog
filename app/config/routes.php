@@ -8,13 +8,13 @@ use App\Controllers\UserController;
 $app->get('/', 'HomeController:index');
 
 $app->post('/login', 'AuthController:login'); 
-$app->post('/register', 'AuthController:register');
 $app->post('/logout', 'AuthController:logout');
 $app->get('/login', 'AuthController:loginForm');
-$app->get('/register', 'AuthController:registrationForm');
+
+$app->get('/register', 'UserController:registrationForm');
+$app->post('/register', 'UserController:create');
 
 $app->group('/users', function () use ($app) {
-    $app->get('', 'UserController:index');
     $app->get('/{id}', 'UserController:show');
     $app->put('/{id}', 'UserController:update');
     $app->delete('/{id}', 'UserController:delete');

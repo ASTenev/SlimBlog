@@ -3,91 +3,99 @@ namespace App\Controllers;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use \App\Services\UserService as UserService;
+use \App\Models\User;
 use Slim\Views\Twig;
-
+use Exception;
 class UserController {
-    private $userService;
+    private $user;
     private $view;
 
-    public function __construct(UserService $userService, Twig $view) {
-        $this->userService = $userService;
+    public function __construct(User $user, Twig $view) {
+        $this->user = $user;
         $this->view = $view;
     }
 
-    public function index(Request $request, Response $response) {
-        // Get all users
-        $users = $this->userService->getAll();
-        print_r($users);
-        // Render view
-        return $this->view->render($response, 'users/index.twig', [
-            'users' => $users
-        ]);
+    public function registrationForm (Request $request, Response $response) {
+        return $this->view->render($response, 'users/register.twig');
     }
 
     public function show(Request $request, Response $response, $args) {
+        //Check if id is set
+        if(!isset($args['id'])||!$args['id']) {
+            throw new Exception('Invalid parameters');
+        }
         // Get user by ID
-        $user = $this->userService->getById($args['id']);
+        $user_data = $this->user->findById($args['id']);
 
         // Render view
         return $this->view->render($response, 'users/show.twig', [
-            'user' => $user
+            'user' => $user_data
         ]);
     }
 
     public function create(Request $request, Response $response) {
-        // Render view
-        return $this->view->render($response, 'users/create.twig');
-    }
-
-    public function store(Request $request, Response $response) {
-        // Get request parameters
-        $data = $request->getParsedBody();
-
-        // Insert user into database
-        $user = $this->userService->create($data);
-
-        // Redirect to users index
-        return $response->withRedirect('/users');
-    }
-
-    public function edit(Request $request, Response $response, $args) {
-        // Get user by ID
-        $user = $this->userService->getById($args['id']);
-
-        // Render view
-        return $this->view->render($response, 'users/edit.twig', [
-            'user' => $user
-        ]);
-    }
-
-    public function update(Request $request, Response $response, $args) {
         // Get request parameters
         $params = $request->getParsedBody();
 
-        // Get the user by ID
-        $user = $this->userService->getById($args['id']);
+        if(!isset($params['name'])||!isset($params['email'])||!isset($params['password'])) {
+            throw new Exception('Invalid parameters');
+        }
 
-        // Update user object
-        $user->setUsername($params['username']);
-        $user->setEmail($params['email']);
-        $user->setPassword($params['password']);
+       // Try to Insert user into database
+       try{
+        $user_data = $this->user->create($params);
+            $_SESSION['flash']['success'] = 'User created successfully.';
+            return $response->withRedirect('/login');
+       } catch (Exception $e) {
+            $_SESSION['flash']['error'] = $e->getMessage();
+            return $response->withRedirect('/register');
+         }
+    }
+
+    public function edit(Request $request, Response $response, $args) {
+        //Check if id is set
+        if(!isset($args['id'])||!$args['id']) {
+            throw new Exception('Invalid parameters');
+        }
+        $user_data = $request->getParsedBody();
+        // Render view
+        if(!count($user_data))
+        {
+            $errors = ['Invalid user id'];
+        }
+        return $this->view->render($response, 'users/edit.twig', [
+                'user' => $user_data,
+                'errors' => $errors
+            ]);
+    }
+
+    public function update(Request $request, Response $response, $args) {
+        //Check if id is set
+        if(!isset($args['id'])||!$args['id']){
+            throw new Exception('Invalid parameters');
+        }
+        // Get request parameters
+        $params = $request->getParsedBody();
 
         // Update user in database
-        $this->userService->update($user);
+        $this->user->update($args['id'], $params);
 
         // Redirect to users index
         return $response->withRedirect('/users');
     }
 
     public function delete(Request $request, Response $response, $args) {
-        // Get the user by ID
-        $user = $this->userService->getById($args['id']);
+        //Check if id is set
+        if(!isset($args['id'])||!$args['id']){
+            throw new Exception('Invalid parameters');
+        }
 
         // Delete user from database
-        $this->userService->delete($user);
+        $this->user->delete($args['id']);
 
         // Redirect to users index
         return $response->withRedirect('/users');
     }
 }
+
+   
