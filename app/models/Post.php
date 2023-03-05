@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
-
-namespace App\Models;
+use Exception;
+use App\Repositories\PostRepository;
 
 class Post 
 {
@@ -12,10 +12,10 @@ class Post
     private $user_id;
     private $created_at;
     private $updated_at;
-
     private $repository;
 
-    public function __construct( $repository) {
+     public function __construct(PostRepository $repository)
+    {
         $this->repository = $repository;
     }
 
@@ -89,32 +89,59 @@ class Post
         $this->updated_at = $updated_at;
     }
     
-     public function findAll() {
+    public function getAll()
+    {
         // Get all users from database
         return $this->repository->getAll();
     }
 
-    public function findById($id) {
+    public function getById($id)
+    {
         // Get user by ID from database
-        $this->repository->setCondition('id',$id);
-
-        return $this->repository->getByField();
+        if (!isset($id) || !$id) {
+            throw new Exception('Invalid parameters');
+        }
+        return $this->repository->getByField('id',$id);
     }
 
-    public function delete() {
-        // Delete user from database
-    }
 
-    public function save() {
-        // Save user to database
-    }
-
-    public function update() {
-        // Update user in database
-    }
-
-    public function create() {
+    public function create($params)
+    {
         
+        // Register user
+        if (!isset($params['name']) || !isset($params['email']) || !isset($params['password'])) {
+            throw new Exception('Invalid parameters');
+        }
+        $user_data = $this->repository->getByField('email', $params['email']);
 
+        if ($user_data) {
+            throw new Exception('Email already exists');
+        }
+        try {
+            return $this->repository->create($params);
+        } catch (Exception $e) {
+            return $e;
+        }
+    }
+
+    public function update($params)
+    {
+        // Update user in database
+        if (empty($params['id'])) {
+            throw new Exception('Invalid parameters');
+        }
+
+        return $this->repository->update($params);
+    }
+
+    public function delete($params)
+    {
+        // Delete user from database
+        if (empty($params['id'])) {
+            throw new Exception('Invalid parameters');
+        }
+
+        return $this->repository->delete($params);
     }
 }
+

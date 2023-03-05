@@ -17,7 +17,7 @@ class HomeController{
 
     public function index(Request $request, Response $response) {
         // Get all posts
-        $posts = $this->post->findAll();
+        $posts = $this->post->getAll();
         // Render view
         return $this->view->render($response, 'posts/index.twig', [
             'posts' => $posts

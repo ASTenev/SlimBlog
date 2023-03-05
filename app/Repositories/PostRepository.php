@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories;
 
 use App\Interfaces\RepositoryInterface;
@@ -7,30 +8,10 @@ class PostRepository
 {
     private $repository;
     private $table = 'posts';
-    private $data = [];
-    private $id;
-    private $condition_field = '';
-    private $condition_value = '';
 
     public function __construct(RepositoryInterface $repository)
     {
         $this->repository = $repository;
-    }
-
-    public function setData(array $data)
-    {
-        $this->data = $data;
-    }
-
-    public function setCondition($field, $value)
-    {
-        $this->condition_field = $field;
-        $this->condition_value = $value;
-    }
-
-    public function setId(int $id)
-    {
-        $this->id = $id;
     }
 
     public function getAll()
@@ -38,23 +19,44 @@ class PostRepository
         return $this->repository->read($this->table);
     }
 
-    public function getByField()
+    public function getByField($field, $value)
     {
-        return $this->repository->read($this->table,$this->condition_field,$this->condition_value);
+        if (!isset($field) || !isset($value)) {
+            return false; // Prevent reading all records without condition
+        }
+        
+        return $this->repository->read($this->table, $field, $value);
     }
 
-    public function create($data)
+    public function create($params)
     {
-        return $this->repository->create($this->table,$this->data);
+        if (!count($params)) {
+            return false; // Prevent creating empty record
+        }
+         
+        return $this->repository->create($this->table, $params);
     }
 
-    public function update($id, $data)
+    public function update($params)
     {
-        return $this->repository->update($this->table,$this->id,$this->data);
+        if (!isset($params['id'])) {
+            return false; // Prevent updating all records without condition
+        } else {
+            $id = $params['id'];
+            unset($params['id']);
+        }
+
+        return $this->repository->update($this->table, $id, $params);
     }
 
-    public function delete($id)
+    public function delete($params)
     {
-        return $this->repository->delete($this->table,$this->id);
+        if (!isset($params['id'])) {
+            return false; // Prevent deleting all records without condition
+        } else {
+            $id = $params['id'];
+            unset($params['id']);
+        }
+        return $this->repository->delete($this->table, $id);
     }
 }

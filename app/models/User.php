@@ -74,13 +74,13 @@ class User
         $this->password = $password;
     }
 
-    public function findAll()
+    public function getAll()
     {
         // Get all users from database
         return $this->repository->getAll();
     }
 
-    public function findById($params)
+    public function getById($params)
     {
         // Get user by ID from database
         if (!isset($params['id']) || !$params['id']) {
@@ -93,7 +93,7 @@ class User
 
     public function create($params)
     {
-        
+
         // Register user
         if (!isset($params['name']) || !isset($params['email']) || !isset($params['password'])) {
             throw new Exception('Invalid parameters');

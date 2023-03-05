@@ -67,6 +67,7 @@ $container['UserRepository'] = function ($container) {
 $container['PostRepository'] = function ($container) {
     return new App\Repositories\PostRepository
     (
-        $container->get('Mysql')
+        $container->get('Mysql'),
+        $container->get('UserRepository')
     );
 };

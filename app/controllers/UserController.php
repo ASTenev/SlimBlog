@@ -27,11 +27,11 @@ class UserController
     public function show(Request $request, Response $response, $args)
     {
         //Check if id is set
-        if (!isset($args['id']) || !$args['id']) {
+        if (!isset($args['slug']) || !$args['slug']) {
             throw new Exception('Invalid parameters');
         }
         // Get user by ID
-        $user_data = $this->user->findById($args['id']);
+        $user_data = $this->user->getById($args['slug']);
 
         // Render view
         return $this->view->render($response, 'users/show.twig', [

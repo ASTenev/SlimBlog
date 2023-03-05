@@ -14,7 +14,7 @@ final class PostsTableCreate extends AbstractMigration
               ->addColumn('user_id', 'integer', ['signed' => false])
               ->addColumn('created_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
               ->addColumn('updated_at', 'datetime', ['null' => true])
-              ->addForeignKey('user_id', 'users', 'id', ['delete'=> 'SET_NULL', 'update'=> 'NO_ACTION'])
+              ->addForeignKey('user_id', 'users', 'id', ['delete'=> 'CASCADE', 'update'=> 'NO_ACTION'])
               ->create();
     }
 }

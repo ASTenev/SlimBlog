@@ -1,94 +1,117 @@
-<?php 
+<?php
+
 namespace App\Controllers;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use App\Services\PostService;
+use \App\Models\Post;
 use Slim\Views\Twig;
+use Exception;
 
-class PostController{
-    private $postService;
+class PostController
+{
+    private $post;
     private $view;
 
-    public function __construct(PostService $postService, Twig $view) {
-        $this->postService = $postService;
+    public function __construct(Post $post, Twig $view)
+    {
+        $this->post = $post;
         $this->view = $view;
     }
 
-    public function index(Request $request, Response $response) {
+    public function index (Request $request, Response $response)
+    {
         // Get all posts
-        $posts = $this->postService->getAll();
+        $posts = $this->post->getAll();
+
         // Render view
         return $this->view->render($response, 'posts/index.twig', [
             'posts' => $posts
         ]);
     }
 
-    public function show(Request $request, Response $response, $args) {
+    public function show(Request $request, Response $response, $args)
+    {
+        //Check if id is set
+        if (!isset($args['slug']) || !$args['slug']) {
+            throw new Exception('Invalid parameters');
+        }
         // Get post by ID
-        $post = $this->postService->getById($args['id']);
-
+        $post_data = $this->post->getById($args['slug']);
+        
         // Render view
         return $this->view->render($response, 'posts/show.twig', [
-            'post' => $post
+            'post' => $post_data[0]
         ]);
     }
 
-    public function create(Request $request, Response $response) {
-        // Render view
-        return $this->view->render($response, 'posts/create.twig');
-    }
-
-    public function store(Request $request, Response $response) {
+    public function create(Request $request, Response $response)
+    {
         // Get request parameters
         $params = $request->getParsedBody();
+        if (!isset($params['title']) || !isset($params['content']) || !isset($params['image'])) {
+            throw new Exception('Invalid parameters');
+        }
+        $params = [
+            'name' => $params['title'],
+            'email' => $params['content'],
+            'password' => $params['image']
+        ];
 
-        // Create new post object
-        $post = new Post();
-        $post->setTitle($params['title']);
-        $post->setBody($params['body']);
-
-        // Insert post into database
-        $post = $this->postService->create($post);
-
-        // Redirect to posts index
-        return $response->withRedirect('/posts');
+        // Try to Insert post into database
+        session_start();
+        try {
+            $this->post->create($params);
+            $_SESSION['flash'] = 'Post created successfully.';
+            return $response->withRedirect('/login');
+        } catch (Exception $e) {
+            $_SESSION['flash'] = $e->getMessage();
+            return $response->withRedirect('/register');
+        }
     }
 
-    public function edit(Request $request, Response $response, $args) {
-        // Get post by ID
-        $post = $this->postService->getById($args['id']);
-
+    public function edit(Request $request, Response $response, $args)
+    {
+        //Check if id is set
+        if (!isset($args['id']) || !$args['id']) {
+            throw new Exception('Invalid parameters');
+        }
+        $post_data = $request->getParsedBody();
         // Render view
+        if (!count($post_data)) {
+            $errors = ['Invalid post id'];
+        }
         return $this->view->render($response, 'posts/edit.twig', [
-            'post' => $post
+            'post' => $post_data,
+            'errors' => $errors
         ]);
     }
 
-    public function update(Request $request, Response $response, $args) {
+    public function update(Request $request, Response $response, $args)
+    {
+        //Check if id is set
+        if (!isset($args['id']) || !$args['id']) {
+            throw new Exception('Invalid parameters');
+        }
         // Get request parameters
         $params = $request->getParsedBody();
-
-        // Get post by ID
-        $post = $this->postService->getById($args['id']);
-
-        // Update post object
-        $post->setTitle($params['title']);
-        $post->setBody($params['body']);
 
         // Update post in database
-        $post = $this->postService->update($post->getId(), $post);
+        $this->post->update($args['id'], $params);
 
         // Redirect to posts index
         return $response->withRedirect('/posts');
     }
 
-    public function delete(Request $request, Response $response, $args) {
-        // Get post by ID
-        $post = $this->postService->getById($args['id']);
+    public function delete(Request $request, Response $response, $args)
+    {
+        //Check if id is set
+        if (!isset($args['id']) || !$args['id']) {
+            throw new Exception('Invalid parameters');
+        }
 
         // Delete post from database
-        $this->postService->delete($post->getId());
+        $this->post->delete($args['id']);
 
         // Redirect to posts index
         return $response->withRedirect('/posts');

@@ -51,10 +51,12 @@ class Mysql implements RepositoryInterface{
             $teaser = ', LEFT(content, 120) AS content';
         }
         $sql = "SELECT * $teaser FROM $table $where";
+
         // Prepare and execute statement
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
         return $result !== false ? $result : false;
     }
 
