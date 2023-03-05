@@ -1,7 +1,6 @@
 <?php
 namespace App\Database;
 use App\Interfaces\RepositoryInterface;
-
 use PDO;
 
 class Mysql implements RepositoryInterface{
@@ -25,29 +24,33 @@ class Mysql implements RepositoryInterface{
         $keys = implode(", ", array_keys($data));
         $values = ":" . implode(", :", array_keys($data));
         $sql = "INSERT INTO $table ($keys) VALUES ($values)";
-
         // Prepare and execute statement
         $stmt = $this->conn->prepare($sql);
         foreach ($data as $key => &$value) {
             $stmt->bindParam(":$key", $value);
         }
         $stmt->execute();
-        return $stmt->rowCount() > 0;
+        if($stmt->rowCount() > 0){
+            //return last inserted id
+            return $this->conn->lastInsertId();
+        } else {
+            throw new \Exception("User not registerd");
+        }
     }
 
     function read(string $table, string $condition_field = '', string $condition_value = '') {
         // Generate SQL query
         if($condition_field&&$condition_value)
         {
-            $where = "WHERE `$condition_value` = `$condition_value`";
+            $where = "WHERE `$condition_field` = '$condition_value'";
+            $teaser = '';
         }
         else
         {
-            $teaser = ', LEFT(content, 120) AS content';
             $where = '';
+            $teaser = ', LEFT(content, 120) AS content';
         }
         $sql = "SELECT * $teaser FROM $table $where";
-
         // Prepare and execute statement
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();

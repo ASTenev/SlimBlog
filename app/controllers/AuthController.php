@@ -17,7 +17,14 @@ class AuthController {
 
     public function loginForm(Request $request, Response $response) {
         // Render view
-        return $this->view->render($response, 'auth/login.twig');
+        if(isset($_SESSION['flash'])) {
+            $flash_message = $_SESSION['flash'];
+            unset($_SESSION['flash']);
+        }
+        return $this->view->render($response, 'auth/login.twig', [
+            'flash_message' => $flash_message ?? null
+        ]);
+        
     }
 
     public function login(Request $request, Response $response) {

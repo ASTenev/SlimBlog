@@ -30,7 +30,8 @@ $container['UserController'] = function ($container) {
 $container['AuthController'] = function ($container) {
     return new App\Controllers\AuthController(
         $container->get('User'),
-        $container->get('View')
+        $container->get('View'),
+        $container
     );
 };
 
