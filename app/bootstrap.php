@@ -1,7 +1,7 @@
 <?php
 //Here the app is initialized and the routes are loaded
 //This file is required in public\index.php
-use App\Middlewares\FileUploadMiddleware;
+use App\Middlewares\ImageUploadMiddleware;
 use App\Middlewares\AuthMiddleware;
 
 //Require the composer autoloader responsible for loading all the dependencies
@@ -21,7 +21,7 @@ $container = $app->getContainer();
 require __DIR__ .'/dependancies.php';
 
 //Add the middlewares
-$app->add(new FileUploadMiddleware(__DIR__ . '/uploads'));
+$app->add(new ImageUploadMiddleware(__DIR__ . '/../public/images/posts'));
 
 
 //Load the routes

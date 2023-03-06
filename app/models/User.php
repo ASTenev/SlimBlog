@@ -105,9 +105,6 @@ class User
     public function create($params)
     {
         // Register user
-        if (!isset($params['name']) || !isset($params['email']) || !isset($params['password'])) {
-            throw new Exception('Invalid parameters');
-        }
         $user_data = $this->repository->getByField('email', $params['email']);
 
         if ($user_data) {

@@ -1,9 +1,11 @@
 <?php
+
 namespace App\Models;
+
 use Exception;
 use App\Repositories\PostRepository;
 
-class Post 
+class Post
 {
     private $id;
     private $title;
@@ -14,7 +16,7 @@ class Post
     private $updated_at;
     private $repository;
 
-     public function __construct(PostRepository $repository)
+    public function __construct(PostRepository $repository)
     {
         $this->repository = $repository;
     }
@@ -88,11 +90,11 @@ class Post
     {
         $this->updated_at = $updated_at;
     }
-    
+
     public function getAll()
     {
         // Get all users from database
-        return $this->repository->getAll();
+        return $this->repository->get();
     }
 
     public function getById($id)
@@ -101,8 +103,8 @@ class Post
         if (!isset($id) || !$id) {
             throw new Exception('Invalid parameters');
         }
-        $post_data= $this->repository->getByField('id',$id);
-        return $post_data[0] ?? null;
+        $posts = $this->repository->get('id', $id);
+        return $posts[0] ?? null;
     }
 
     public function getByUserId($user_id)
@@ -112,22 +114,14 @@ class Post
             throw new Exception('Invalid parameters');
         }
 
-        $user_data = $this->repository->getByField('user_id',$user_id);
-        return $user_data[0] ?? null;
+        $posts = $this->repository->get('user_id', $user_id);
+
+        return $posts ?? null;
     }
 
     public function create($params)
     {
-        
-        // Register user
-        if (!isset($params['name']) || !isset($params['email']) || !isset($params['password'])) {
-            throw new Exception('Invalid parameters');
-        }
-        $user_data = $this->repository->getByField('email', $params['email']);
-
-        if ($user_data) {
-            throw new Exception('Email already exists');
-        }
+        // Create post in database
         try {
             return $this->repository->create($params);
         } catch (Exception $e) {
@@ -141,8 +135,11 @@ class Post
         if (empty($params['id'])) {
             throw new Exception('Invalid parameters');
         }
-
-        return $this->repository->update($params);
+        try {
+            return $this->repository->update($params);
+        } catch (Exception $e) {
+            return $e;
+        }
     }
 
     public function delete($params)
@@ -151,8 +148,10 @@ class Post
         if (empty($params['id'])) {
             throw new Exception('Invalid parameters');
         }
-
-        return $this->repository->delete($params);
+        try {
+            return $this->repository->delete($params);
+        } catch (Exception $e) {
+            return $e;
+        }
     }
 }
-

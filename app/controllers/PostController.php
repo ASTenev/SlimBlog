@@ -23,7 +23,6 @@ class PostController
     {
         // Get all posts
         $posts = $this->post->getAll();
-
         // Render view
         return $this->view->render($response, 'posts/index.twig', [
             'posts' => $posts,
@@ -39,7 +38,7 @@ class PostController
         }
         // Get post by ID
         $posts = $this->post->getByUserId($args['id']);
-
+        
         // Render view
         return $this->view->render($response, 'posts/index.twig', [
             'posts' => $posts,
@@ -54,11 +53,11 @@ class PostController
             throw new Exception('Invalid parameters');
         }
         // Get post by ID
-        $post_data = $this->post->getById($args['slug']);
-        
+        $post = $this->post->getById($args['slug']);
         // Render view
+        
         return $this->view->render($response, 'posts/show.twig', [
-            'post' => $post_data,
+            'post' => $post,
             'session' => $_SESSION ?? null
         ]);
     }
@@ -77,20 +76,20 @@ class PostController
             throw new Exception('Invalid parameters');
         }
         $params = [
-            'name' => $params['title'],
-            'email' => $params['content'],
-            'password' => $params['image']
+            'title' => $params['title'],
+            'content' => $params['content'],
+            'image' => $params['image'],
+            'user_id' => $_SESSION['user']['id']
         ];
 
         // Try to Insert post into database
-        session_start();
         try {
             $this->post->create($params);
             $_SESSION['flash'] = 'Post created successfully.';
-            return $response->withRedirect('/login');
+            return $response->withRedirect('/posts');
         } catch (Exception $e) {
             $_SESSION['flash'] = $e->getMessage();
-            return $response->withRedirect('/register');
+            return $response->withRedirect('/posts');
         }
     }
 

@@ -22,42 +22,21 @@ class PostRepository
         return $this->table;
     }
 
-    public function getAll()
+  
+    public function get($field = '', $value = '')
     {
+        //Build ORM object
         $orm = new \stdClass();
         $orm->table = $this->table;
-        $orm->join = $this->userRepostiory->getTable();
-        $orm->join_field1 = 'user_id';
-        $orm->join_field2 = 'id';
-        $result = $this->repository->read($orm);
-        foreach($result as $key => $value) {
-            //remove password and email from result
-            unset($result[$key]['password']);
-            unset($result[$key]['email']);
+        if($field && $value) {
+            $orm->field = $field;
+            $orm->value = $value;
         }
-        return $result;
+        $posts = $this->repository->read($orm);
+        foreach($posts as $key => $post) {
+            $posts[$key]['user'] = $this->userRepostiory->getByField('id', $post['user_id'])[0];
         }
-
-    public function getByField($field, $value)
-    {
-        if (!isset($field) || !isset($value)) {
-            return false; // Prevent reading all records without condition
-        }
-
-        $orm = new \stdClass();
-        $orm->table = $this->table;
-        $orm->join = $this->userRepostiory->getTable();
-        $orm->join_field1 = 'user_id';
-        $orm->join_field2 = 'id';
-        $orm->field = $field;
-        $orm->value = $value;
-        $result = $this->repository->read($orm);
-        foreach($result as $key => $value) {
-            //remove password and email from result
-            unset($result[$key]['password']);
-            unset($result[$key]['email']);
-        }
-        return $result;
+        return $posts;
     }
 
     public function create($params)
@@ -68,7 +47,6 @@ class PostRepository
         $orm = new \stdClass();
         $orm->table = $this->table;
         $orm->params = $params;
-
         return $this->repository->create($orm);
     }
 

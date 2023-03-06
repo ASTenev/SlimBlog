@@ -32,11 +32,11 @@ class UserRepository
         if (!isset($field) || !isset($value)) {
             return false; // Prevent reading all records without condition
         }
+        //Build ORM object
         $orm = new \stdClass();
         $orm->table = $this->table;
         $orm->field = $field;
         $orm->value = $value;
-
         return $this->repository->read($orm);
     }
 

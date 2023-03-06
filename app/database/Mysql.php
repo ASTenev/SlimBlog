@@ -50,26 +50,14 @@ class Mysql implements RepositoryInterface
     {
         // Generate SQL query
         $where = ' ';
-        if (property_exists($orm, 'join')) {
-            $where .= "JOIN {$orm->join} ON {$orm->join}.{$orm->join_field2} = {$orm->table}.{$orm->join_field1} ";
-        }
-
         if (property_exists($orm, 'field') &&property_exists($orm, 'value')) {
             $where .= "WHERE {$orm->table}.{$orm->field} = '{$orm->value}'";
-            $teaser = '';
-        } else {
-            $teaser = ', LEFT(content, 120) AS content';
         }
-
-        $table = $orm->table;
-
-        $sql = "SELECT * $teaser FROM $table $where";
-
+        $sql = "SELECT * FROM {$orm->table} $where";
         // Prepare and execute statement
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
         return $result !== false ? $result : false;
     }
 
