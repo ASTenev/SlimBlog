@@ -25,7 +25,7 @@ class PostController
         $posts = $this->post->getAll();
 
         // Sort to show latest posts first
-        usort($posts, function($a, $b) {
+        usort($posts, function ($a, $b) {
             return strtotime($b['created_at']) - strtotime($a['created_at']);
         });
         // Render view
@@ -143,10 +143,13 @@ class PostController
         if (!isset($args['id']) || !$args['id']) {
             throw new Exception('Invalid parameters');
         }
-
+        // Delete post image
+        $post = $this->post->getById($args['id']);
+        if (file_exists(__DIR__ . "/../../public/images/posts/{$post['image']}")) {
+            unlink(__DIR__ . "/../../public/images/posts/{$post['image']}");
+        }
         // Delete post from database
         $this->post->delete($args['id']);
-
         // Redirect to posts index
         return $response->withRedirect($request->getUri()->getPath());
     }

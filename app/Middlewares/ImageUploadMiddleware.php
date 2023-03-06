@@ -27,9 +27,12 @@ class ImageUploadMiddleware
                     // Check if the uploaded file is an image
                     if (in_array($file->getClientMediaType(), ['image/jpeg', 'image/png', 'image/gif'])) {
                         // Delete the old file if it exists
-                        if (isset($request->getParsedBody()[$name])) {
-                            $oldFileName = $request->getParsedBody()[$name];
-                            unlink($this->uploadDir . DIRECTORY_SEPARATOR . $oldFileName);
+                        if (isset($request->getParsedBody()['old_image'])) {
+                            $oldFileName = $request->getParsedBody()['old_image'];
+                            $oldFilePath = $this->uploadDir . DIRECTORY_SEPARATOR . $oldFileName;
+                            if (file_exists($oldFilePath)) {
+                                unlink($oldFilePath);
+                            }
                         }
                         $fileName = $this->moveUploadedFile($this->uploadDir, $file);
                         $request = $request->withParsedBody(array_merge($request->getParsedBody(), [
@@ -47,7 +50,10 @@ class ImageUploadMiddleware
         if (count($errors) > 0) {
             return $response->withStatus(400)->write('Error uploading file');
         }
-
+        
+        $parsedBody = $request->getParsedBody();
+        unset($parsedBody['old_image']);
+        $request = $request->withParsedBody($parsedBody);
         return $next($request, $response);
     }
 
@@ -55,7 +61,7 @@ class ImageUploadMiddleware
     {
         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
         $basename = bin2hex(random_bytes(8));
-        $filename = sprintf('%s.%0.8s', $basename, $extension);
+        $filename = sprintf('%s_%d.%s', $basename, time(), $extension);
 
         $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
 

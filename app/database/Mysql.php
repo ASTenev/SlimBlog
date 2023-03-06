@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Database;
 
 use App\Interfaces\RepositoryInterface;
@@ -27,7 +28,7 @@ class Mysql implements RepositoryInterface
     {
         // Generate SQL query
         $where = ' ';
-        if (property_exists($orm, 'field') &&property_exists($orm, 'value')) {
+        if (property_exists($orm, 'field') && property_exists($orm, 'value')) {
             $where .= "WHERE {$orm->table}.{$orm->field} = '{$orm->value}'";
         }
         $sql = "SELECT * FROM {$orm->table} $where";
@@ -92,7 +93,7 @@ class Mysql implements RepositoryInterface
 
         if (!$id) return false; // Prevent deleting all records (without condition
         $sql = "DELETE FROM $table WHERE id = $id";
-        
+
         // Prepare and execute statement
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();

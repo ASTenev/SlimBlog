@@ -42,6 +42,7 @@
                                 <div class="mb-3">
                                     {% if post.image %}
                                         <img src="/images/posts/{{ post.image }}" alt="Current image" style="width:200px;height:200px">
+                                        <input type='hidden' name="old_image" value="{{ post.image }}">
                                     {% endif %}
                                     <label for="image" class="form-label">Image</label>
                                     <input type="file" class="form-control" id="image" name="image">
