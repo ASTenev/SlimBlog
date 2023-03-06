@@ -18,6 +18,7 @@ return array(
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
     'App\\Repositories\\PostRepository' => $baseDir . '/app/Repositories/PostRepository.php',
     'App\\Repositories\\UserRepository' => $baseDir . '/app/Repositories/UserRepository.php',
+    'App\\Services\\ImageUploadService' => $baseDir . '/app/Services/ImageUploadService.php',
     'Attribute' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
     'Cake\\Core\\App' => $vendorDir . '/cakephp/core/App.php',
     'Cake\\Core\\BasePlugin' => $vendorDir . '/cakephp/core/BasePlugin.php',

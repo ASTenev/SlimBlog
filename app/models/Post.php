@@ -101,9 +101,18 @@ class Post
         if (!isset($id) || !$id) {
             throw new Exception('Invalid parameters');
         }
-        return $this->repository->getByField('id',$id);
+        list($post_data)= $this->repository->getByField('id',$id);
+        return $post_data;
     }
 
+    public function getByUserId($user_id)
+    {
+        // Get user by ID from database
+        if (!isset($user_id) || !$user_id) {
+            throw new Exception('Invalid parameters');
+        }
+        return $this->repository->getByField('user_id',$user_id);
+    }
 
     public function create($params)
     {

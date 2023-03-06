@@ -21,9 +21,24 @@ class PostController
 
     public function index (Request $request, Response $response)
     {
-        die(print_r($_SESSION));
         // Get all posts
         $posts = $this->post->getAll();
+
+        // Render view
+        return $this->view->render($response, 'posts/index.twig', [
+            'posts' => $posts,
+            'session' => $_SESSION ?? null
+        ]);
+    }
+
+    public function showUserPosts(Request $request, Response $response, $args)
+    {
+        //Check if id is set
+        if (!isset($args['id']) || !$args['id']) {
+            throw new Exception('Invalid parameters');
+        }
+        // Get post by ID
+        $posts = $this->post->getByUserId($args['id']);
 
         // Render view
         return $this->view->render($response, 'posts/index.twig', [
@@ -35,7 +50,6 @@ class PostController
     public function show(Request $request, Response $response, $args)
     {
         //Check if id is set
-        die(print_r($_SESSION));
         if (!isset($args['slug']) || !$args['slug']) {
             throw new Exception('Invalid parameters');
         }
@@ -44,7 +58,7 @@ class PostController
         
         // Render view
         return $this->view->render($response, 'posts/show.twig', [
-            'post' => $post_data[0],
+            'post' => $post_data,
             'session' => $_SESSION ?? null
         ]);
     }
@@ -89,12 +103,12 @@ class PostController
         $post_data = $this->post->getById($args['id']);
 
         // Render view
-        if (!$post_data[0]) {
+        if (!$post_data) {
             $errors = ['Invalid post id'];
         }
 
         return $this->view->render($response, 'posts/create.twig', [
-            'post' => $post_data[0],
+            'post' => $post_data,
             'errors' => $errors ?? [],
             'session' => $_SESSION ?? null
         ]);

@@ -71,3 +71,10 @@ $container['PostRepository'] = function ($container) {
         $container->get('UserRepository')
     );
 };
+
+$container['AuthMiddleware'] = function ($container) {
+    return new App\Middlewares\AuthMiddleware
+    (
+        $container->get('Post')
+    );
+};

@@ -77,11 +77,11 @@ class UserController
         }
         $user_data = $request->getParsedBody();
         // Render view
-        if (!$user_data[0]) {
+        if (!$user_data) {
             $errors = ['Invalid user id'];
         }
         return $this->view->render($response, 'users/edit.twig', [
-            'user' => $user_data[0],
+            'user' => $user_data,
             'errors' => $errors,
             'session' => $_SESSION ?? null
         ]);

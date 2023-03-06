@@ -9,6 +9,9 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         {% if session.user is defined %}
+          <li class="nav-item">
+          <a class="nav-link text-light" href="/users/{{session.user.id}}/posts">My posts</a>
+        </li>
           <a href="/logout" class="btn btn-outline-light rounded-0 me-2">Logout</a>
         {% else %}
         <li class="nav-item">

@@ -206,6 +206,7 @@ class ComposerStaticInitb64ffeb91e55971663468101fecc75dc
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'App\\Repositories\\PostRepository' => __DIR__ . '/../..' . '/app/Repositories/PostRepository.php',
         'App\\Repositories\\UserRepository' => __DIR__ . '/../..' . '/app/Repositories/UserRepository.php',
+        'App\\Services\\ImageUploadService' => __DIR__ . '/../..' . '/app/Services/ImageUploadService.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Cake\\Core\\App' => __DIR__ . '/..' . '/cakephp/core/App.php',
         'Cake\\Core\\BasePlugin' => __DIR__ . '/..' . '/cakephp/core/BasePlugin.php',
