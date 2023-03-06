@@ -36,7 +36,7 @@ class UserRepository
         $orm->table = $this->table;
         $orm->field = $field;
         $orm->value = $value;
-        
+
         return $this->repository->read($orm);
     }
 

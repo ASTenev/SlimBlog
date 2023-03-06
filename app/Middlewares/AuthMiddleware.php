@@ -44,21 +44,21 @@ class AuthMiddleware
 
     public function checkPostUserPermissions (Request $request, Response $response)
     {
-        $postId = $request->getAttribute('route')->getArgument('id');
         $userId = $_SESSION['user']['id'];
-        $post_data = $this->post->getById($postId);
-
-        if (!$post_data || $post_data['user_id'] !== $userId) {
-            return false;
+        $postId = $request->getAttribute('route')->getArgument('id');
+        if($postId) {
+            $post_data = $this->post->getById($postId);
+            if (!$post_data || $post_data['user_id'] !== $userId) {
+                return false;
+            }
         }
         return true;
     }
     public function checkPageUserPermissions (Request $request, Response $response) {
         // Check if the user has permission to access the post
-        $id = $request->getAttribute('route')->getArgument('id');
         $userId = $_SESSION['user']['id'];
-
-        if (!$id || $id !== $userId) {
+        $id = $request->getAttribute('route')->getArgument('id');
+        if ($id !== $userId) {
             return false;
         }
         return true;

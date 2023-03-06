@@ -35,10 +35,9 @@ class AuthController {
     public function login(Request $request, Response $response) {
         // Get request parameters
         $params = $request->getParsedBody();
-        $this->user->setEmail($params['email']);
-        $this->user->setPassword($params['password']);
         // Get user from database
-        list($user_data) = $this->user->getByEmail($params['email']);
+        
+        $user_data = $this->user->getByEmail($params['email']);
 
         // Verify password
         if (!$user_data || !password_verify($params['password'], $user_data['password'])) {

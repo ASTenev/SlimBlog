@@ -87,8 +87,8 @@ class User
             throw new Exception('Invalid parameters');
         }
 
-        list($user_data)= $this->repository->getByField('id',$id);
-        return $user_data;
+        $user_data= $this->repository->getByField('id',$id);
+        return $user_data ?? null;
     }
 
     public function getByEmail($email)
@@ -98,7 +98,8 @@ class User
             throw new Exception('Invalid parameters');
         }
         
-        return $this->repository->getByField('email',$email);
+        $user_data = $this->repository->getByField('email',$email);
+        return $user_data[0] ?? null;
     }
 
     public function create($params)

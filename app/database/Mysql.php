@@ -64,7 +64,7 @@ class Mysql implements RepositoryInterface
         $table = $orm->table;
 
         $sql = "SELECT * $teaser FROM $table $where";
-        
+
         // Prepare and execute statement
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();

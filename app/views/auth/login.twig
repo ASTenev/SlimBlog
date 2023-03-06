@@ -9,7 +9,7 @@
                 {% include 'partials/flash.twig' %}
                     <!-- Registration form-->
                     <div class="card mb-4">
-                        <div class="card-header"><b class=" font-weight-bold">REGISTER FOR FREE</b></div>
+                        <div class="card-header"><b class=" font-weight-bold">LOG IN</b></div>
                         <div class="card-body">
                             <form method="POST" action="/login">
                                     <div class="mb-3">
@@ -22,10 +22,6 @@
                                     <div class="form-group">
                                     <label for="password">Password</label>
                                     <input type="password" class="form-control" id="password" name="password" required data-validation="password">
-                                    </div>
-                                    <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                                    <label class="form-check-label" for="remember">Remember me.</label>
                                     </div>
                                 <button type="submit" class="btn btn-primary">Log in</button>
                             </form>
