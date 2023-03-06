@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Middlewares;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -15,33 +16,40 @@ class ImageUploadMiddleware
     }
 
     public function __invoke(Request $request, Response $response, $next)
-{
-    $files = $request->getUploadedFiles();
-    
-    $errors = [];
+    {
+        $files = $request->getUploadedFiles();
 
-    foreach ($files as $name => $file) {
-        if ($file->getError() === UPLOAD_ERR_OK) {
-            // Check if the uploaded file is an image
-            if (in_array($file->getClientMediaType(), ['image/jpeg', 'image/png', 'image/gif'])) {
-                $fileName = $this->moveUploadedFile($this->uploadDir, $file);
-                $request = $request->withParsedBody(array_merge($request->getParsedBody(), [
-                    $name => $fileName
-                ]));
-            } else {
-                $errors[] = 'Uploaded file is not an image';
+        $errors = [];
+
+        foreach ($files as $name => $file) {
+            if ($file->getError() !== UPLOAD_ERR_NO_FILE) {
+                if ($file->getError() === UPLOAD_ERR_OK) {
+                    // Check if the uploaded file is an image
+                    if (in_array($file->getClientMediaType(), ['image/jpeg', 'image/png', 'image/gif'])) {
+                        // Delete the old file if it exists
+                        if (isset($request->getParsedBody()[$name])) {
+                            $oldFileName = $request->getParsedBody()[$name];
+                            unlink($this->uploadDir . DIRECTORY_SEPARATOR . $oldFileName);
+                        }
+                        $fileName = $this->moveUploadedFile($this->uploadDir, $file);
+                        $request = $request->withParsedBody(array_merge($request->getParsedBody(), [
+                            $name => $fileName
+                        ]));
+                    } else {
+                        $errors[] = 'Uploaded file is not an image';
+                    }
+                } else {
+                    $errors[] = $file->getError();
+                }
             }
-        } else {
-            $errors[] = $file->getError();
         }
-    }
 
-    if (count($errors) > 0) {
-        return $response->withStatus(400)->write('Error uploading file');
-    }
+        if (count($errors) > 0) {
+            return $response->withStatus(400)->write('Error uploading file');
+        }
 
-    return $next($request, $response);
-}
+        return $next($request, $response);
+    }
 
     private function moveUploadedFile($directory, $uploadedFile)
     {

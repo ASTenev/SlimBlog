@@ -195,13 +195,12 @@ class ComposerStaticInitb64ffeb91e55971663468101fecc75dc
 
     public static $classMap = array (
         'App\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Controllers/AuthController.php',
-        'App\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Controllers/HomeController.php',
         'App\\Controllers\\PostController' => __DIR__ . '/../..' . '/app/Controllers/PostController.php',
         'App\\Controllers\\UserController' => __DIR__ . '/../..' . '/app/Controllers/UserController.php',
         'App\\Database\\Mysql' => __DIR__ . '/../..' . '/app/Database/Mysql.php',
         'App\\Interfaces\\RepositoryInterface' => __DIR__ . '/../..' . '/app/Interfaces/RepositoryInterface.php',
         'App\\Middlewares\\AuthMiddleware' => __DIR__ . '/../..' . '/app/Middlewares/AuthMiddleware.php',
-        'App\\Middlewares\\FileUploadMiddleware' => __DIR__ . '/../..' . '/app/Middlewares/FileUploadMiddleware.php',
+        'App\\Middlewares\\ImageUploadMiddleware' => __DIR__ . '/../..' . '/app/Middlewares/ImageUploadMiddleware.php',
         'App\\Models\\Post' => __DIR__ . '/../..' . '/app/Models/Post.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'App\\Repositories\\PostRepository' => __DIR__ . '/../..' . '/app/Repositories/PostRepository.php',

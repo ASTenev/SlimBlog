@@ -65,16 +65,14 @@ $container['UserRepository'] = function ($container) {
 };
 
 $container['PostRepository'] = function ($container) {
-    return new App\Repositories\PostRepository
-    (
-        $container->get('Mysql'),
-        $container->get('UserRepository')
-    );
+    return new App\Repositories\PostRepository(
+            $container->get('Mysql'),
+            $container->get('UserRepository')
+        );
 };
 
 $container['AuthMiddleware'] = function ($container) {
-    return new App\Middlewares\AuthMiddleware
-    (
-        $container->get('Post')
-    );
+    return new App\Middlewares\AuthMiddleware(
+            $container->get('Post')
+        );
 };

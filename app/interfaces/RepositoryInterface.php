@@ -1,9 +1,10 @@
 <?php
+
 namespace App\Interfaces;
 
-interface RepositoryInterface 
+interface RepositoryInterface
 {
-    public function read(object $orm);
+    public function get(object $orm);
     public function create(object $orm);
     public function update(object $orm);
     public function delete(object $orm);

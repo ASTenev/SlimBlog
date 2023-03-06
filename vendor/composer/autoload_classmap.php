@@ -7,13 +7,12 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'App\\Controllers\\AuthController' => $baseDir . '/app/Controllers/AuthController.php',
-    'App\\Controllers\\HomeController' => $baseDir . '/app/Controllers/HomeController.php',
     'App\\Controllers\\PostController' => $baseDir . '/app/Controllers/PostController.php',
     'App\\Controllers\\UserController' => $baseDir . '/app/Controllers/UserController.php',
     'App\\Database\\Mysql' => $baseDir . '/app/Database/Mysql.php',
     'App\\Interfaces\\RepositoryInterface' => $baseDir . '/app/Interfaces/RepositoryInterface.php',
     'App\\Middlewares\\AuthMiddleware' => $baseDir . '/app/Middlewares/AuthMiddleware.php',
-    'App\\Middlewares\\FileUploadMiddleware' => $baseDir . '/app/Middlewares/FileUploadMiddleware.php',
+    'App\\Middlewares\\ImageUploadMiddleware' => $baseDir . '/app/Middlewares/ImageUploadMiddleware.php',
     'App\\Models\\Post' => $baseDir . '/app/Models/Post.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
     'App\\Repositories\\PostRepository' => $baseDir . '/app/Repositories/PostRepository.php',

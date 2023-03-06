@@ -7,7 +7,7 @@
             <div class="col-md-9 col-lg-6">
                 <div class="row">
                 <a class="nav-link text-dark" href="/posts">< Back</a>
-                    {% if post is defined %}
+                    {% if post is not null %}
                     <!-- Post content-->
                     <article>
                     
@@ -27,7 +27,7 @@
                         <figure class="mb-4"><img class="img-fluid rounded" src="{{image}}" alt="..." /></figure>
                         <!-- Post content-->
                         <section class="mb-5">
-                            <p class="fs-5 mb-4 text-justify!" style="text-indent: 1.5em;white-space: pre-wrap;">{{post.content}}</p>
+                            <p class="fs-5 mb-4 text-justify!" style="text-indent: 1.5em; white-space: pre-wrap; text-align: justify;">{{ post.content }}</p>
                         </section>
                     </article>
                     {% else %}

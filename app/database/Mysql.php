@@ -23,6 +23,21 @@ class Mysql implements RepositoryInterface
         $this->conn = null;
     }
 
+    function get($orm)
+    {
+        // Generate SQL query
+        $where = ' ';
+        if (property_exists($orm, 'field') &&property_exists($orm, 'value')) {
+            $where .= "WHERE {$orm->table}.{$orm->field} = '{$orm->value}'";
+        }
+        $sql = "SELECT * FROM {$orm->table} $where";
+        // Prepare and execute statement
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result !== false ? $result : false;
+    }
+
     function create($orm)
     {
         // Generate SQL query
@@ -44,21 +59,6 @@ class Mysql implements RepositoryInterface
         } else {
             throw new \Exception("User not registerd");
         }
-    }
-
-    function read($orm)
-    {
-        // Generate SQL query
-        $where = ' ';
-        if (property_exists($orm, 'field') &&property_exists($orm, 'value')) {
-            $where .= "WHERE {$orm->table}.{$orm->field} = '{$orm->value}'";
-        }
-        $sql = "SELECT * FROM {$orm->table} $where";
-        // Prepare and execute statement
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $result !== false ? $result : false;
     }
 
     function update($orm)
@@ -92,7 +92,7 @@ class Mysql implements RepositoryInterface
 
         if (!$id) return false; // Prevent deleting all records (without condition
         $sql = "DELETE FROM $table WHERE id = $id";
-
+        
         // Prepare and execute statement
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();

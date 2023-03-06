@@ -1,12 +1,13 @@
 <?php
+
 namespace App\Config;
 
 use App\Middlewares\AuthMiddleware;
 use App\Models\Post;
 
-$app->get('/', 'HomeController:index');
+$app->get('/', 'PostController:index');
 
-$app->post('/login', 'AuthController:login'); 
+$app->post('/login', 'AuthController:login');
 $app->get('/logout', 'AuthController:logout')->add('AuthMiddleware');
 $app->get('/login', 'AuthController:loginForm');
 
@@ -25,5 +26,4 @@ $app->group('/posts', function () use ($app) {
     $app->put('/{id}', 'PostController:update')->add('AuthMiddleware');
     $app->delete('/{id}', 'PostController:delete')->add('AuthMiddleware');
     $app->get('/{id}/edit', 'PostController:edit')->add('AuthMiddleware');
-    
 });

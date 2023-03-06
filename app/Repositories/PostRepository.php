@@ -22,19 +22,18 @@ class PostRepository
         return $this->table;
     }
 
-  
     public function get($field = '', $value = '')
     {
         //Build ORM object
         $orm = new \stdClass();
         $orm->table = $this->table;
-        if($field && $value) {
+        if ($field && $value) {
             $orm->field = $field;
             $orm->value = $value;
         }
-        $posts = $this->repository->read($orm);
-        foreach($posts as $key => $post) {
-            $posts[$key]['user'] = $this->userRepostiory->getByField('id', $post['user_id'])[0];
+        $posts = $this->repository->get($orm);
+        foreach ($posts as $key => $post) {
+            $posts[$key]['user'] = $this->userRepostiory->get('id', $post['user_id'])[0];
         }
         return $posts;
     }
@@ -63,23 +62,17 @@ class PostRepository
         $orm->table = $this->table;
         $orm->id = $id;
         $orm->params = $params;
-
         return $this->repository->update($orm);
     }
 
-    public function delete($params)
+    public function delete($id)
     {
-        if (!isset($params['id'])) {
+        if (!isset($id)) {
             return false; // Prevent deleting all records without condition
-        } else {
-            $id = $params['id'];
-            unset($params['id']);
         }
-
         $orm = new \stdClass();
         $orm->table = $this->table;
         $orm->id = $id;
-
         return $this->repository->delete($orm);
     }
 }

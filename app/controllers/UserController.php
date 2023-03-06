@@ -21,30 +21,12 @@ class UserController
 
     public function registrationForm(Request $request, Response $response)
     {
-        if(isset($_SESSION['user'])) {
+        if (isset($_SESSION['user'])) {
             return $response->withRedirect('/');
         }
         return $this->view->render($response, 'users/register.twig');
     }
 
-    public function show(Request $request, Response $response, $args)
-    {
-        //Check if id is set
-        
-        if (!isset($args['slug']) || !$args['slug']) {
-            throw new Exception('Invalid parameters');
-        }
-        // Get user by ID
-        $user_data = $this->user->getById($args['slug']);
-
-        // Render view
-        return $this->view->render($response, 'users/show.twig', [
-            'user' => $user_data,
-            'session' => $_SESSION ?? null
-        ]);
-    }
-
-    
     public function create(Request $request, Response $response)
     {
         // Get request parameters

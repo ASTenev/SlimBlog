@@ -5,7 +5,7 @@
     <header class="py-5 bg-light border-bottom mb-4">
         <div class="container">
             <div class="text-center my-5">
-                <h1 class="fw-bolder">Welcome to Bloggie!</h1>
+                <h1 class="fw-bolder">Welcome to My Blog!</h1>
                 <p class="lead mb-0">Explore, inspire, and share your passion with the world.</p>
             </div>
         </div>
@@ -16,7 +16,7 @@
             <div class="col-md-9 col-lg-7">
                 <div class="row">
                 {% include 'partials/flash.twig' %}
-                {% if posts is defined %}
+                {% if posts|length > 0 %}
                         {% for post in posts %}
                         <div class="col-md-6 mx-auto" style="width: 400px;">
                         <div class="card mb-4">
@@ -33,20 +33,20 @@
                             <div class="card-body">
                             <div class="small text-muted">Posted on {{ post.created_at|date('F j, Y') }} by {{post.user.name}}</div>
                             <h2 class="card-title h4">{{post.title}}</h2>
-                                <p class="card-text text-justify!" style="text-indent: 1.5em;">{{post.content}} ...</p>
+                                <p class="card-text" style="text-indent: 1.5em; text-align: justify;">{{ post.content|slice(0, 100) }} ...</p>
                                 <a class="btn btn-primary" href="/posts/{{post.id}}">Read more →</a>
                             </div>
                         </div>
                         </div>
                         {% endfor %}
                         {% else %}
-                    <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
-                        <h3 class="text-center" style="width: 100%;">POST NOT FOUND</h3>
-                    </div>
+                        <div class="d-flex justify-content-center align-items-center" style="height: 100px;">
+                            <h3 class="text-center" style="width: 100%;">POST NOT FOUND</h3>
+                        </div>
                     {% endif %}
                     {% if session.user is defined %}
                     <a class="btn btn-primary mt-5 mb-5" href="/posts/create">Create Post</a>
-                {% endif %}
+                    {% endif %}
                 </div>
                 
             </div>

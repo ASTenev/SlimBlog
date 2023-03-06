@@ -19,10 +19,15 @@ class PostController
         $this->view = $view;
     }
 
-    public function index (Request $request, Response $response)
+    public function index(Request $request, Response $response)
     {
         // Get all posts
         $posts = $this->post->getAll();
+
+        // Sort to show latest posts first
+        usort($posts, function($a, $b) {
+            return strtotime($b['created_at']) - strtotime($a['created_at']);
+        });
         // Render view
         return $this->view->render($response, 'posts/index.twig', [
             'posts' => $posts,
@@ -38,7 +43,6 @@ class PostController
         }
         // Get post by ID
         $posts = $this->post->getByUserId($args['id']);
-        
         // Render view
         return $this->view->render($response, 'posts/index.twig', [
             'posts' => $posts,
@@ -55,7 +59,6 @@ class PostController
         // Get post by ID
         $post = $this->post->getById($args['slug']);
         // Render view
-        
         return $this->view->render($response, 'posts/show.twig', [
             'post' => $post,
             'session' => $_SESSION ?? null
@@ -64,15 +67,19 @@ class PostController
 
     public function createForm(Request $request, Response $response)
     {
-        return $this->view->render($response, 'posts/create.twig',
-            ['session' => $_SESSION ?? null]);
+        // Render view
+        return $this->view->render(
+            $response,
+            'posts/create.twig',
+            ['session' => $_SESSION ?? null]
+        );
     }
 
     public function create(Request $request, Response $response)
     {
         // Get request parameters
         $params = $request->getParsedBody();
-        if (!isset($params['title']) || !isset($params['content']) || !isset($params['image'])) {
+        if (!isset($params['title']) || !isset($params['content'])) {
             throw new Exception('Invalid parameters');
         }
         $params = [
@@ -141,6 +148,6 @@ class PostController
         $this->post->delete($args['id']);
 
         // Redirect to posts index
-        return $response->withRedirect('/posts');
+        return $response->withRedirect($request->getUri()->getPath());
     }
 }
